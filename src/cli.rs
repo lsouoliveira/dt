@@ -11,7 +11,11 @@ pub struct Cli {
 
     /// Reload dotfiles (needs to be implemented as a custom command)
     #[arg(short, long, action = clap::ArgAction::SetTrue)]
-    pub reload: bool
+    pub reload: bool,
+
+    /// Open the dotfiles (needs to be implemented as a custom command)
+    #[arg(short, long, action = clap::ArgAction::SetTrue)]
+    pub open: bool
 }
 
 impl Cli {

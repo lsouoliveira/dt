@@ -36,7 +36,7 @@ impl Application {
     }
 
     fn are_flags_present(&self) -> bool {
-        self.cli.sync || self.cli.reload
+        self.cli.sync || self.cli.reload || self.cli.open
     }
 
     fn handle_flags(&self) {
@@ -44,6 +44,8 @@ impl Application {
             let _ = commands::sync(self.settings.root());
         } else if self.cli.reload {
             self.run_command("reload"); 
+        } else if self.cli.open {
+            self.run_command("open");
         } else {
             eprintln!("Error: no command specified");
             std::process::exit(1);
