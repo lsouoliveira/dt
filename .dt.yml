@@ -1,0 +1,4 @@
+root: ~/.dotfiles
+editor: nvim
+folders:
+  nvim: ~/.dotfiles/nvim
