@@ -1,9 +1,9 @@
 use std::process::Command;
 
-pub fn open_editor(editor: &str, folder: &str) -> Result<(), Box<dyn std::error:: Error>> {
+pub fn run(command: &str) -> Result<(), Box<dyn std::error:: Error>> {
     Command::new("sh")
         .arg("-c")
-        .arg(format!("{} {}", editor, folder))
+        .arg(command)
         .spawn()?
         .wait()?;
 

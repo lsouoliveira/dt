@@ -2,12 +2,16 @@ use clap::Parser;
 
 #[derive(Parser)]
 pub struct Cli {
-    /// File to open
-    pub folder: Option<String>,
+    /// Custom command to run
+    pub command: Option<String>,
 
     /// Fetch and pull changes from remote
     #[arg(short, long, action = clap::ArgAction::SetTrue)]
-    pub sync: bool
+    pub sync: bool,
+
+    /// Reload dotfiles (needs to be implemented as a custom command)
+    #[arg(short, long, action = clap::ArgAction::SetTrue)]
+    pub reload: bool
 }
 
 impl Cli {

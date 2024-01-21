@@ -10,7 +10,11 @@ pub struct Application {
 impl Application {
     pub fn init() -> Self {
         let cli = Cli::parse();
-        let settings = Settings::load();
+        let settings = Settings::load()
+            .unwrap_or_else(|_| {
+                eprintln!("Error: invalid config file");
+                std::process::exit(1);
+            });
 
         Self {
             cli,
@@ -19,41 +23,40 @@ impl Application {
     }
 
     pub fn run(&self) {
-        if self.cli.folder.is_none() && !self.are_flags_present() {
-            eprintln!("Error: no folder specified");
+        if self.cli.command.is_none() && !self.are_flags_present() {
+            eprintln!("Error: no command specified");
             std::process::exit(1);
         }
 
-        if self.cli.folder.is_none() {
+        if self.cli.command.is_none() {
             self.handle_flags();
         } else {
-            self.open_folder();
+            self.run_command(self.cli.command.as_ref().unwrap());
         }
     }
 
     fn are_flags_present(&self) -> bool {
-        self.cli.sync
+        self.cli.sync || self.cli.reload
     }
 
     fn handle_flags(&self) {
         if self.cli.sync {
             let _ = commands::sync(self.settings.root());
+        } else if self.cli.reload {
+            self.run_command("reload"); 
         } else {
-            eprintln!("Error: no folder specified");
+            eprintln!("Error: no command specified");
             std::process::exit(1);
         }
     }
 
-    fn open_folder(&self) {
-        let editor_command = self.settings.editor();
-        let folder_id = self.cli.folder.as_ref().unwrap();
-
-        let folder_path = self.settings.get_folder_id(folder_id).unwrap_or_else(|_| {
-            eprintln!("Error: folder with id {} not found", folder_id);
+    fn run_command(&self, command: &str) {
+        let command = self.settings.get_command(command).unwrap_or_else(|_| {
+            eprintln!("Error: command {:?} was not found", command);
             std::process::exit(1);
         });
 
-        commands::open_editor(editor_command, folder_path).unwrap_or_else(|err| {
+        commands::run(command).unwrap_or_else(|err| {
             eprintln!("Error: {}", err);
             std::process::exit(1);
         });
