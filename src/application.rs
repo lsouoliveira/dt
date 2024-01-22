@@ -4,6 +4,7 @@ use crate::settings::Settings;
 use crate::commands;
 use crate::cli::Cli;
 
+const CONFIG_ENV_VAR_NAME: &str = "DT_CONFIG_FILE";
 const CONFIG_FILE_NAME: &str = "~/.dt.yml";
 
 pub struct Application {
@@ -14,7 +15,7 @@ pub struct Application {
 impl Application {
     pub fn init() -> Self {
         let cli = Cli::parse(std::env::args());
-        let settings = Settings::load(&shellexpand::tilde(CONFIG_FILE_NAME))
+        let settings = Settings::load(&shellexpand::tilde(&Self::config_file_name()))
             .unwrap_or_else(|_| {
                 eprintln!("Error: invalid config file");
                 std::process::exit(1);
@@ -66,5 +67,12 @@ impl Application {
             eprintln!("Error: {}", err);
             std::process::exit(1);
         });
+    }
+
+    fn config_file_name() -> String {
+        match std::env::var_os(CONFIG_ENV_VAR_NAME) { 
+            Some(v) => v.into_string().unwrap(),
+            _ => CONFIG_FILE_NAME.to_string() 
+        }
     }
 }
