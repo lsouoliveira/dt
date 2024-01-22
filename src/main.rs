@@ -1,9 +1,4 @@
-mod settings;
-mod commands;
-mod cli;
-mod application;
-
-use application::Application;
+use dt::application::Application;
 
 fn main() {
     let application = Application::init();

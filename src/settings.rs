@@ -1,8 +1,5 @@
 use config::Config;
 use std::collections::HashMap;
-use shellexpand;
-
-const CONFIG_FILE_NAME: &str = "~/.dt.yml";
 
 #[derive(serde::Deserialize)]
 pub struct Settings {
@@ -28,11 +25,11 @@ impl std::fmt::Display for SettingsError {
 impl std::error::Error for SettingsError {}
 
 impl Settings {
-    pub fn load() -> Result<Self, SettingsError> {
+    pub fn load(path: &str) -> Result<Self, SettingsError> {
         let config = Config::builder()
-            .add_source(config::File::with_name(&shellexpand::tilde(CONFIG_FILE_NAME)))
+            .add_source(config::File::with_name(path))
             .build()
-            .unwrap();
+            .map_err(|_| SettingsError::ParseError)?;
 
         config
             .try_deserialize()

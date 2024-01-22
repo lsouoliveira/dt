@@ -1,4 +1,5 @@
 use clap::Parser;
+use std::ffi::OsString;
 
 #[derive(Parser)]
 pub struct Cli {
@@ -19,7 +20,11 @@ pub struct Cli {
 }
 
 impl Cli {
-    pub fn parse() -> Self {
-        Self::parse_from(std::env::args())
+    pub fn parse<I, T>(itr: I) -> Self
+    where
+      I: IntoIterator<Item = T>,
+      T: Into<OsString> + Clone,
+    {
+        Cli::parse_from(itr)
     }
 }

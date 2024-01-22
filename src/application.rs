@@ -1,6 +1,10 @@
+use shellexpand;
+
 use crate::settings::Settings;
 use crate::commands;
 use crate::cli::Cli;
+
+const CONFIG_FILE_NAME: &str = "~/.dt.yml";
 
 pub struct Application {
     cli: Cli,
@@ -9,8 +13,8 @@ pub struct Application {
 
 impl Application {
     pub fn init() -> Self {
-        let cli = Cli::parse();
-        let settings = Settings::load()
+        let cli = Cli::parse(std::env::args());
+        let settings = Settings::load(&shellexpand::tilde(CONFIG_FILE_NAME))
             .unwrap_or_else(|_| {
                 eprintln!("Error: invalid config file");
                 std::process::exit(1);
